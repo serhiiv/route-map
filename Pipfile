@@ -5,13 +5,13 @@ verify_ssl = true
 
 [dev-packages]
 pylint = "*"
-python-dotenv = "*"
 autopep8 = "*"
 
 [packages]
 flask = "*"
 flask-sqlalchemy = "*"
 flask-wtf = "*"
+python-dotenv = "*"
 
 [requires]
 python_version = "3.7"
