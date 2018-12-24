@@ -14,8 +14,6 @@
         <a href="{{ url_for('login') }}">Login</a>
     </div>
     <hr>
-    <div style="color: red;">{{ config }}</div>    
-    <hr>
     {% with messages = get_flashed_messages() %}
     {% if messages %}
     <ul>
