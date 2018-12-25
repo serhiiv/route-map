@@ -1,5 +1,5 @@
 # for developer sqlite files
-*.sqlite
+*.db
 
 # for docker project
 prestart.sh
