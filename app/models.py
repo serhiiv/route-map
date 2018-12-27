@@ -22,7 +22,7 @@ class Route(db.Model):
 class Invoice(db.Model):
 
     id = db.Column(db.String(15), primary_key=True)
-    order = db.Column(db.Integer, nullable=True)
+    order = db.Column(db.Integer, default=0)
     route_id = db.Column(
         db.String(15), db.ForeignKey('route.id'), nullable=True)
 

@@ -3,10 +3,18 @@
 {% block content %}
 <div style="color: red;">{{ config }}</div>    
 <hr>
-<h1>Hi..., {{ user.username }}!</h1>
-{% for post in posts %}
+<h1>Routes</h1>
+{% for route in routes %}
 <div>
-    <p>{{ post.author.username }} says: <b>{{ post.body }}</b></p>
+    <p>{{ route }}</p>
 </div>
 {% endfor %}
+<hr>
+<h1>Invoices</h1>
+{% for invoice in invoices %}
+<div>
+    <p>{{ invoice }}</p>
+</div>
+{% endfor %}
+
 {% endblock %}
