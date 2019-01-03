@@ -1,5 +1,6 @@
 from app import db
 from app.models import Route, Invoice
+from datetime import datetime
 
 
 def invoice_processing(data):
@@ -8,6 +9,23 @@ def invoice_processing(data):
 
     method = data.get('method', False)
     if method == 'update':
+        if not invoice:
+            invoice = Invoice(id=id)
+
+        # invoice.order = 0
+        # invoice.route_id = None
+        invoice.date = datetime.strptime(data.get('date'), '%d.%m.%Y')
+        invoice.client_nickname = data.get('client_nickname')
+        invoice.client_name = data.get('client_name')
+        invoice.volume = data.get('volume')
+        invoice.lon = data.get('lon')
+        invoice.lat = data.get('lat')
+        invoice.city = data.get('city')
+        invoice.city_lon = data.get('city_lon')
+        invoice.city_lat = data.get('city_lat')
+        db.session.add(invoice)
+
+    elif method == 'route':
         if not invoice:
             invoice = Invoice(id=id)
 
@@ -30,10 +48,14 @@ def route_processing(data):
         if not route:
             route = Route(id=id)
 
+        route.date = datetime.strptime(data.get('date'), '%d.%m.%Y')
+        route.car = data.get('car')
+        route.car_volume = data.get('car_volume')
         db.session.add(route)
+
         invoices = data.get('invoices', list())
         for invoice in invoices:
-            invoice['method'] = method
+            invoice['method'] = 'route'
             invoice['route_id'] = id
             invoice_processing(invoice)
 
