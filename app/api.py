@@ -11,9 +11,9 @@ def invoice_processing(data):
     if method == 'update':
         if not invoice:
             invoice = Invoice(id=id)
-
-        # invoice.order = 0
-        # invoice.route_id = None
+            invoice.order = 0
+            invoice.route_id = None
+            
         invoice.date = datetime.strptime(data.get('date'), '%d.%m.%Y')
         invoice.client_nickname = data.get('client_nickname')
         invoice.client_name = data.get('client_name')

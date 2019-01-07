@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
+
 <div style="color: red;">{{ config }}</div>    
 <hr>
 <h1>Routes</h1>
@@ -9,7 +10,7 @@
     <p>{{ route }}</p>
 </div>
 {% endfor %}
-<hr>
+
 <h1>Invoices</h1>
 {% for invoice in invoices %}
 <div>

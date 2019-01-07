@@ -1,15 +1,6 @@
 from app import db
 
 
-class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(64), index=True, unique=True)
-    password_hash = db.Column(db.String(128))
-
-    def __repr__(self):
-        return '<User: {}>'.format(self.username)
-
-
 class Route(db.Model):
 
     id = db.Column(db.String(15), primary_key=True)
@@ -24,11 +15,8 @@ class Route(db.Model):
         out.append(f'Date: {self.date}')
         out.append(f'Car: {self.car}')
         out.append(f'Volume: {self.car_volume}')
-        out.append('Invoices: [')
-        for invoice in self.invoices:
-            out.append(invoice.id[:10])
-
-        out.append(']>')
+        out.append('Invoices: [' + ', '.join([i.id[:10]
+                                              for i in self.invoices]) + ']>')
         return ', '.join(out)
 
 
@@ -54,6 +42,9 @@ class Invoice(db.Model):
         out.append(f'Order: {self.order}')
         if self.route_id:
             out.append(f'Route: {self.route_id[:10]}')
+        else:
+            out.append(f'Route: {self.route_id}')
+
         out.append(f'Date: {self.date}')
         out.append(f'Nickname: {self.client_nickname}')
         out.append(f'Name: {self.client_name}')
