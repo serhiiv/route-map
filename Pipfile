@@ -10,11 +10,11 @@ ipython = "*"
 flask-shell-ipython = "*"
 
 [packages]
-flask = "*"
-flask-sqlalchemy = "*"
+flask-migrate = "*"
 flask-wtf = "*"
 python-dotenv = "*"
-flask-migrate = "*"
+folium = "*"
+googlemaps = "*"
 
 [requires]
 python_version = "3.7"

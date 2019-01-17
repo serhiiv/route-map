@@ -1,0 +1,53 @@
+<table>
+    <tr>
+        <th colspan="2">
+            <h4>{{ invoice.client_nickname }}</h4>
+        </th>
+    </tr>
+    <tr>
+        <td>Менеджер &nbsp;</td>
+        <th>{{ invoice.manadger }}</th>
+    </tr>
+    <tr>
+        <td>Рахунок</td>
+        <th>{{ invoice.id[:10] }}</th>
+    </tr>
+    <tr>
+        <td>Об'єм:</td>
+        <th>{{ invoice.volume }} м<sup>3</sup></th>
+    </tr>
+    {% if invoice.order > 0 %}
+    <tr>
+        <td colspan="2">
+            <h4>Маршрут {{ route.manadger_distance }} км.</h4>
+        </td>
+    </tr>
+    <tr>
+        <td>Документ</td>
+        <th>{{ route.id[:10] }}</th>
+    </tr>
+    <tr>
+        <td>Машина</td>
+        <th>{{ route.car }}</th>
+    </tr>
+    <tr>
+        <td>Об'єм</td>
+        <th>{{ route.volume }} / {{ route.car_volume }} м<sup>3</sup></th>
+    </tr>
+    <tr>
+        <td>Порядок</td>
+        <th>{{ m_order }} із {{ length }} </th>
+    </tr>
+    {% if diff %}
+    <tr>
+        <td colspan="2">
+            <h4>Варіант {{ route.google_distance }} км. ({{ diff }})</h4>
+        </td>
+    </tr>
+    <tr>
+        <td>Порядок</td>
+        <th>{{ g_order }} із {{ length }}</th>
+    </tr>
+    {% endif %}
+    {% endif %}
+</table>
