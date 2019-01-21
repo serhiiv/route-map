@@ -45,15 +45,19 @@ def invoice_processing(data):
     id = data.get('id', False)
     invoice = Invoice.query.get(id)
 
+    print('___ invoice :', id)
+
+
     method = data.get('method', False)
     if method == 'update':
         if not invoice:
             invoice = Invoice(id=id)
             invoice.order = 0
             invoice.route_id = None
-            invoice.route_date = None
+            invoice.route_datetime = None
 
-        invoice.date = data.get('date')
+
+        invoice.invoice_datetime = datetime.strptime(data.get('date'), '%d.%m.%y %H:%M:%S')
         invoice.manadger = data.get('manadger')
         invoice.client_nickname = data.get('client_nickname')
         invoice.client_name = data.get('client_name')
@@ -72,7 +76,7 @@ def invoice_processing(data):
 
         invoice.order = data.get('order', 0)
         invoice.route_id = data.get('route_id', None)
-        invoice.route_date = data.get('route_date', None)
+        invoice.route_datetime = data.get('route_date', None)
         db.session.add(invoice)
 
     elif method == 'delete' and invoice:
@@ -87,13 +91,15 @@ def route_processing(data):
     id = data.get('id', False)
     route = Route.query.get(id)
 
+    print('___ route :', id)
+
     method = data.get('method', False)
     if method == 'update':
         if not route:
             # make new if absent
             route = Route(id=id)
 
-        route.date = data.get('date')
+        route.route_datetime = datetime.strptime(data.get('date'), '%d.%m.%y %H:%M:%S')
         route.car = data.get('car')
         route.car_volume = data.get('car_volume')
         db.session.add(route)
@@ -103,7 +109,7 @@ def route_processing(data):
         for invoice in invoices:
             invoice['method'] = 'route'
             invoice['route_id'] = id
-            invoice['route_date'] = route.date
+            invoice['route_date'] = route.route_datetime
             invoice_processing(invoice)
 
         # calculate additional data for route
@@ -129,6 +135,8 @@ def route_processing(data):
         points.append((49.443813, 26.936749))
 
         route.points = pickle.dumps(route_points)
+
+        print(route_points)
 
         gm = googlemaps.Client(key=app.config['GOOGLE_KEY'])
 

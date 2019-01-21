@@ -5,9 +5,10 @@ class Route(db.Model):
 
     id = db.Column(db.String(15), primary_key=True)
     invoices = db.relationship('Invoice', backref='route', lazy=True)
-    date = db.Column(db.String(10))
-    car = db.Column(db.String(50))
+    route_datetime = db.Column(db.DateTime)
+    car = db.Column(db.Unicode(50))
     car_volume = db.Column(db.Float)
+    car_volume_opt = db.Column(db.Float)
     volume = db.Column(db.Float)
     points = db.Column(db.PickleType)
     manadger_waypoint_order = db.Column(db.PickleType)
@@ -26,26 +27,26 @@ class Route(db.Model):
         return out
 
     def __repr__(self):
-        return f'<Route: {self.id[:10]} from {date}>'
+        return f'<Route: {self.id[:10]} from {self.route_datetime}>'
 
 
 class Invoice(db.Model):
 
     id = db.Column(db.String(15), primary_key=True)
     order = db.Column(db.Integer)
-    manadger = db.Column(db.String(250))
-    date = db.Column(db.String(10))
-    route_date = db.Column(db.String(10))
-    client_nickname = db.Column(db.String(32))
-    client_name = db.Column(db.String(250))
+    manadger = db.Column(db.Unicode(250))
+    invoice_datetime = db.Column(db.DateTime)
+    route_datetime = db.Column(db.DateTime)
+    client_nickname = db.Column(db.Unicode(32))
+    client_name = db.Column(db.Unicode(250))
     volume = db.Column(db.Float, default=0)
     lon = db.Column(db.Float)
     lat = db.Column(db.Float)
-    city = db.Column(db.String(40))
+    city = db.Column(db.Unicode(40))
     city_lon = db.Column(db.Float)
     city_lat = db.Column(db.Float)
     route_id = db.Column(
         db.String(15), db.ForeignKey('route.id'), nullable=True)
 
     def __repr__(self):
-        return f'<Invoice: {self.id[:10]} from {date}>'
+        return f'<Invoice: {self.id[:10]} from {self.invoice_datetime}>'

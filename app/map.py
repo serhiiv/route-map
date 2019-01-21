@@ -1,11 +1,13 @@
 import folium
 import pickle
-from folium.plugins import MarkerCluster
+from folium.plugins import (
+    MarkerCluster, PolyLineTextPath, HeatMap, FeatureGroupSubGroup)
 from flask import render_template
+from datetime import datetime, timedelta
+from sqlalchemy import Date, cast
 
 from app import db
 from app.models import Route, Invoice
-from datetime import datetime
 
 
 def popup_invoice(invoice):
@@ -72,6 +74,10 @@ def get_icon(invoice):
 def get_map(day):
 
     # colors = get_colors(day)
+    day_next = datetime.strptime(day + ' 23:59:59', '%Y-%m-%d %H:%M:%S')
+    day_past = datetime.strptime(day + ' 00:00:00', '%Y-%m-%d %H:%M:%S')
+
+    print(day_past, day_next)
 
     # init map
     # start poin TODO: remove from sourse
@@ -88,41 +94,60 @@ def get_map(day):
         icon=folium.Icon(icon='home', prefix='fa', color=COLOR_HOME)
     ).add_to(m)
 
-    # add markers for clients
-    marker_layer = MarkerCluster(name='markers',
-                                 options={'maxClusterRadius': 2}).add_to(m)
+    # heatmap_layer = folium.FeatureGroup(name='HeatMap', show=False).add_to(m)
+    # data = list()
+    # for invoice in Invoice.query.filter(Invoice.invoice_datetime.between(day_past, day_next)):
+    #     data.append((invoice.lat, invoice.lon, invoice.volume))
+    # HeatMap(data).add_to(heatmap_layer)
 
-    for invoice in Invoice.query.filter_by(order=0, date=day):
-        folium.Marker(
+    mc = MarkerCluster(control=False, options={
+                       'maxClusterRadius': 1}).add_to(m)
+    m.add_child(mc)
+
+    # add stand alone invoices
+    inv = FeatureGroupSubGroup(mc, 'Рахунки')
+    m.add_child(inv)
+
+    for invoice in Invoice.query.filter_by(order=0):
+        inv.add_child(folium.Marker(
             location=[invoice.lat, invoice.lon],
             popup=popup_invoice(invoice),
             icon=get_icon(invoice)
-            # icon=get_icon(invoice, colors)
-        ).add_to(marker_layer)
+        ))
 
-    for route in Route.query.filter_by(date=day):
-        route_layer = folium.FeatureGroup(
-            name=route.id[:10] + ' - ' + route.car).add_to(m)
+    for route in Route.query.filter(Route.route_datetime.between(day_past, day_next)):
 
-        marker_layer = MarkerCluster(
-            options={'maxClusterRadius': 2}).add_to(route_layer)
+        rl = FeatureGroupSubGroup(mc, route.id[:10] + ' - ' + route.car)
+        m.add_child(rl)
 
+        # add invoices from route
         for invoice in route.invoices:
-            folium.Marker(
+            rl.add_child(folium.Marker(
                 location=[invoice.lat, invoice.lon],
                 popup=popup_invoice(invoice),
-                # icon=get_icon(invoice, colors)
                 icon=get_icon(invoice)
-            ).add_to(marker_layer)
+            ))
 
         # add pathes from google
         if route.manadger_distance - route.google_distance > 10:
             path = pickle.loads(route.google_polyline)
-            folium.PolyLine(path, weight=5, color='pink').add_to(route_layer)
+            pl = folium.PolyLine(path, weight=1, color='red')
+            rl.add_child(pl)
+            pt = PolyLineTextPath(pl, '>' + ' ' * 20, repeat=True, offset=5,
+                             attributes={'fill': 'red'})
+            rl.add_child(pt)
 
         # add pathes from manadgers
         path = pickle.loads(route.manadger_polyline)
-        folium.PolyLine(path, weight=1, color='black').add_to(route_layer)
+        pl = folium.PolyLine(path, weight=1, color='blue')
+        rl.add_child(pl)
+        pt = PolyLineTextPath(pl, '>' + ' ' * 20, repeat=True, offset=5,
+                         attributes={'fill': 'blue'})
+        rl.add_child(pt)
+        # pl = folium.PolyLine(path, weight=1, color='blue')
+        # PolyLineTextPath(pl, '>' + ' ' * 20, repeat=True, offset=5,
+        #                  attributes={'fill': 'blue'})
+        # rl.add_child(pl)
 
     folium.LayerControl().add_to(m)
 
